@@ -1,12 +1,8 @@
 {
   type: "AdaptiveCard",
+  version: "1.5",
+  '$schema': "http://adaptivecards.io/schemas/adaptive-card.json",
   body: [
-    {
-      type: "TextBlock",
-      text: "How was your experience?",
-      weight: "Bolder",
-      size: "Medium"
-    },
     {
       type: "ColumnSet",
       columns: [
@@ -23,9 +19,14 @@
                   data: {
                     MessageEvent: "AnswerFeedback",
                     Feedback: "like",
+                    FeedbackText: "",
                     Prompt: System.Activity.Text,
-                    Response: Topic.Answer.Text.MarkdownContent
-                  }
+                    Response: Topic.Answer,
+                    ConversationId: System.Conversation.Id,
+                    MessageId: System.LastMessage.Id
+                  },
+                   targetElements: ["feedbackContainer"
+                  ]
                 }
               ]
             }
@@ -39,26 +40,63 @@
               type: "ActionSet",
               actions: [
                 {
-                  type: "Action.Submit",
+                  type: "Action.ToggleVisibility",
                   title: "👎 Dislike",
-                  data: {
-                    MessageEvent: "AnswerFeedback",
-                    Feedback: "dislike",
-                    Prompt: System.Activity.Text,
-                    Response: Topic.Answer.Text.MarkdownContent
-                  }
+                       data: {
+                        MessageEvent: "AnswerFeedback",
+                        Feedback: "dislike",
+                        FeedbackText: "",
+                        Prompt: System.Activity.Text,
+                        Response: Topic.Answer,
+                        ConversationId: System.Conversation.Id,
+                        MessageId: System.LastMessage.Id
+                  },
+                  targetElements: ["feedbackContainer"
+                  ]
                 }
               ]
             }
           ]
         }
       ]
+    },
+    {
+      type: "Container",
+      id: "feedbackContainer",
+      isVisible: !IsBlank(
+  LookUp(Global.FeedbackMap, MessageId = System.LastMessage.Id && Feedback = "dislike")
+),
+      items: [
+        {
+          type: "TextBlock",
+          text: "Please tell us why you disliked this answer:",
+          wrap: true
+        },
+        {
+          type: "Input.Text",
+          id: "FeedbackText",
+          placeholder: "Your feedback",
+          isMultiline: true
+        },
+        {
+          type: "ActionSet",
+          actions: [
+            {
+              type: "Action.Submit",
+              title: "Submit Feedback",
+              associatedInputs: "auto",
+              data: {
+                MessageEvent: "AnswerFeedback",
+                Feedback: "dislike",
+                Prompt: System.Activity.Text,
+                Response: Topic.Answer,
+                ConversationId: System.Conversation.Id,
+                MessageId: System.LastMessage.Id
+              }
+            }
+          ]
+        }
+      ]
     }
-  ],
-  '$schema': "http://adaptivecards.io/schemas/adaptive-card.json",
-  version: "1.5"
+  ]
 }
-
-
-
-

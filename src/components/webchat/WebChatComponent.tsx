@@ -4,9 +4,8 @@ import ReactWebChat, { createDirectLine } from "botframework-webchat";
 const userId = "user_1234";
 const userName = "Default BOT User";
 
-const getTokenUrl = "";
-
-const Secret = "";
+const getTokenUrl = import.meta.env.VITE_TOKEN_URL;
+const Secret = import.meta.env.VITE_SECRET;
 
 const ChatComponent = () => {
   const [token, setToken] = useState<string>();
@@ -18,11 +17,13 @@ const ChatComponent = () => {
 
     // Start Conversation with bot
     dl.postActivity({
-      type: "event",
+      type: "message",
       from: { id: userId, name: userName },
       // OnConversationStart is manual event created on trigger for Conversation Start Topic
-      name: "OnConversationStart",
-      value: {},
+      // name: "OnConversationStart",
+      value: {
+        phrase: "On Sign In",
+      },
     }).subscribe();
 
     return dl;
@@ -76,11 +77,13 @@ const ChatComponent = () => {
         userID={userId}
         username={userName}
         styleOptions={{
-          bubbleBackground: "rgba(0, 0, 255, .1)",
-          bubbleFromUserBackground: "rgba(0, 255, 0, .1)",
-          backgroundColor: "paleturquoise",
-          botAvatarInitials: "BF",
-          userAvatarInitials: "WC",
+          bubbleBackground: "#ffeb3b",
+          bubbleTextColor: "#000",
+          bubbleFromUserBackground: "#03a9f4",
+          bubbleFromUserTextColor: "#fff",
+          backgroundColor: "#f4f6f9",
+          botAvatarInitials: "BF", // use botAvatarImage for Image
+          userAvatarInitials: "WC", // use userAvatarImage from Image
         }}
       />
     </div>
